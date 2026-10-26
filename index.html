@@ -215,9 +215,38 @@ $("translate").addEventListener("click", async () => {
     window.open(url.toString(), "_blank");
 
     status.textContent =
-      "Google Translate opened in a new tab. Copy its translation into the result box below.";
+      
+    const response = await fetch(
+      "https://translate.argosopentech.com/translate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          q: text,
+          source: source.value,
+          target: target.value,
+          format: "text"
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Translation service unavailable");
+    }
+
+    const data = await response.json();
+
+    if (!data.translatedText) {
+      throw new Error("No translation returned");
+    }
+
+    output.value = data.translatedText;
+    status.textContent = "Translation complete!";
+
   } catch (error) {
-    status.textContent = "Could not open Google Translate. Please try again.";
+    status.textContent = "Translation failed. Please try again or check your internet connection.";
   } finally {
     button.disabled = false;
     button.textContent = "Translate text";
