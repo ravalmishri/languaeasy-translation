@@ -228,23 +228,11 @@ $("translate").addEventListener("click", async () => {
     }
 
     output.value = data.translatedText;
-    status.textContent = "Translation complete!";
-  } catch (error) {
-    status.textContent =
-      "Translation failed. The service may be unavailable.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Translate text";
-  }
-});
-
-
-   
    
 
     status.textContent =
-      
     
+  
       "https://translate.argosopentech.com/translate",
       {
         method: "POST",
@@ -268,7 +256,7 @@ $("translate").addEventListener("click", async () => {
 
     if (!data.translatedText) {
       throw new Error("No translation returned");
-    }
+  
 
     output.value = data.translatedText;
     status.textContent = "Translation complete!";
