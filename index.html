@@ -179,6 +179,7 @@ $("copy").addEventListener("click", async () => {
   }
 });
 
+
 $("translate").addEventListener("click", async () => {
   const text = input.value.trim();
 
@@ -197,26 +198,53 @@ $("translate").addEventListener("click", async () => {
   button.disabled = true;
   button.textContent = "Translating...";
   output.value = "";
-  status.textContent = "Connecting to translation service...";
+  status.textContent = "Translating...";
 
   try {
-    const params = new URLSearchParams({
-      q: text,
-      langpair: source.value + "|" + target.value
-    });
+    const response = await fetch(
+      "https://translate.argosopentech.com/translate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          q: text,
+          source: source.value,
+          target: target.value,
+          format: "text"
+        })
+      }
+    );
 
-    
-    const url = new URL("https://translate.google.com/");
-    url.searchParams.set("sl", source.value);
-    url.searchParams.set("tl", target.value);
-    url.searchParams.set("text", text);
-    url.searchParams.set("op", "translate");
+    if (!response.ok) {
+      throw new Error("Translation service unavailable");
+    }
 
+    const data = await response.json();
+
+    if (!data.translatedText) {
+      throw new Error("No translation returned");
+    }
+
+    output.value = data.translatedText;
+    status.textContent = "Translation complete!";
+  } catch (error) {
+    status.textContent =
+      "Translation failed. The service may be unavailable.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Translate text";
+  }
+});
+
+
+   
    
 
     status.textContent =
       
-    const response = await fetch(
+    
       "https://translate.argosopentech.com/translate",
       {
         method: "POST",
